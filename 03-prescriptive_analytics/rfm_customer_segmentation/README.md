@@ -5,6 +5,18 @@ An end-to-end data pipeline and prescriptive analytics application that clusters
 
 ---
 
+## 📊 Application Interface Preview
+
+### Executive Performance KPI Panel
+![Executive Dashboard View](dashboard/assets/dashboard_preview.png)
+
+### Granular Customer Slicing & Filtering Engine
+![Data Explorer Filtering View](dashboard/assets/filtering_engine.png)
+
+### Prescriptive Tactical Marketing Action Matrix
+![Tactical Strategy Matrix View](dashboard/assests/action_matrix.png)
+
+
 ## 🏗️ Core Architecture & Pipeline Workflow
 
 
