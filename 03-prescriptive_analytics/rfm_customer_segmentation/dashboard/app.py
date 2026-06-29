@@ -10,7 +10,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# Custom CSS for modern UI cards
+
 st.markdown("""
     <style>
     .metric-card {
@@ -36,7 +36,14 @@ st.markdown("---")
 
 @st.cache_data
 def load_data():
-    return pd.read_csv("03-prescriptive_analytics/rfm_customer_segmentation/dashboard/rfm_segments.csv")
+    import os
+    
+    cloud_path = "rfm_segments.csv"
+    local_path = "03-prescriptive_analytics/rfm_customer_segmentation/dashboard/rfm_segments.csv"
+    
+    if os.path.exists(cloud_path):
+        return pd.read_csv(cloud_path)
+    return pd.read_csv(local_path)
 
 try:
     df = load_data()
@@ -62,7 +69,6 @@ try:
         "⚙️ Interactive Data Explorer (Filtering Engine)"
     ])
 
-    # --- TAB 1: VISUALIZATIONS & STRATEGY ---
     with tab1:
         col_chart1, col_chart2 = st.columns([3, 2])
         
@@ -90,8 +96,7 @@ try:
             st.plotly_chart(fig_pie, use_container_width=True)
 
         st.markdown("---")
-        
-        # Interactive KPI Calculator
+    
         st.subheader("🔍 Interactive Segment Contribution Analyzer")
         selected_prof = st.radio(
             "Select Target Segment Profile for KPI Breakdown:",
@@ -114,7 +119,6 @@ try:
 
         st.markdown("---")
 
-        # Tactical Action Matrix placed right here for context
         st.subheader("📋 Executive Tactical Action Matrix")
         st.markdown("##### *Segments structured in descending order of Total Capital Value Tier*")
         
@@ -145,8 +149,6 @@ try:
         st.markdown("<br>", unsafe_allow_html=True)
         st.info("💡 **Developer Note:** This matrix serves as the direct pipeline feed for automated email trigger logic in the CRM backend.")
 
-
-    # --- TAB 2: INTERACTIVE FILTERING ENGINE ---
     with tab2:
         st.subheader("⚙️ Customer Lead Generation & Granular Filtering Engine")
         st.markdown("Customize your query criteria to filter and download targeted lists of customer profiles instantly.")
