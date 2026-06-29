@@ -1,24 +1,39 @@
 import pandas as pd
+from sklearn.preprocessing import StandardScaler
+from sklearn.cluster import KMeans
 
-df = pd.read_csv('data/black_friday_dataset.csv')
+data_path = '03-prescriptive_analytics/rfm_customer_segmentation/data/black_friday_dataset.csv'
+df = pd.read_csv(data_path)
+print("Production Pipeline: Dataset loaded successfully.")
 
-rfm = df.groupby('User_ID').agg({
-    'Purchase': ['count', 'sum']
+df['Product_Category_2'] = df['Product_Category_2'].fillna(0).astype(int)
+df['Product_Category_3'] = df['Product_Category_3'].fillna(0).astype(int)
+df = df.drop_duplicates()
+
+customer_df = df.groupby('User_ID').agg({
+    'Product_ID': 'count',                 # Frequency
+    'Purchase': 'sum',                     # Monetary
+    'Product_Category_1': 'nunique'        # Category Diversity
 }).reset_index()
 
-rfm.columns = ['customer_id', 'frequency', 'monetary']
+customer_df.columns = ['customer_id', 'frequency', 'monetary', 'category_diversity']
 
-rfm['r_score'] = pd.qcut(rfm['frequency'].rank(method='first'), q=5, labels=[5,4,3,2,1], duplicates='drop')
-rfm['f_score'] = pd.qcut(rfm['frequency'], q=5, labels=[1,2,3,4,5], duplicates='drop')
-rfm['m_score'] = pd.qcut(rfm['monetary'], q=5, labels=[1,2,3,4,5], duplicates='drop')
+scaler = StandardScaler()
+features = ['frequency', 'monetary', 'category_diversity']
+scaled_features = scaler.fit_transform(customer_df[features])
 
-rfm['segment'] = rfm.apply(lambda x: 
-    'Champions' if x['r_score'] >= 4 and x['f_score'] >= 4 else
-    'Loyal' if x['r_score'] >= 3 and x['f_score'] >= 3 else
-    'At Risk' if x['r_score'] <= 2 else
-    'Potential' if x['f_score'] <= 2 else 'Lost', axis=1)
+kmeans = KMeans(n_clusters=4, random_state=42, n_init=10)
+customer_df['cluster'] = kmeans.fit_predict(scaled_features)
 
-rfm.to_csv('dashboard/rfm_segments.csv', index=False)
+cluster_mapping = {
+    2: 'Whales / VIPs',
+    1: 'High-Value Loyals',
+    3: 'Regulars',
+    0: 'Casual Shoppers'
+}
+customer_df['segment_name'] = customer_df['cluster'].map(cluster_mapping)
 
-print(rfm['segment'].value_counts())
-print("RFM saved to dashboard/rfm_segments.csv")
+# Export Final Deliverable
+output_path = '03-prescriptive_analytics/rfm_customer_segmentation/dashboard/rfm_segments.csv'
+customer_df.to_csv(output_path, index=False)
+print(f"Production Pipeline Complete! Segmented customer profiles saved to: {output_path}")
