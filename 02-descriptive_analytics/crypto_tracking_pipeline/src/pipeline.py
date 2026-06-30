@@ -94,8 +94,30 @@ def run_etl():
         ))
 
     conn.commit()
-    conn.close()
     print(f"Data loading complete. Database updated at: {db_path}")
+
+    # AUTOMATED DASHBOARD EXPORT LAYER
+    print("Generating flattened snapshot for Looker Studio...")
+    query_flat = """
+    SELECT 
+        fact.date_id,
+        dim.name AS asset_name,
+        dim.symbol AS ticker,
+        fact.current_price,
+        fact.market_cap,
+        fact.total_volume,
+        fact.price_change_24h,
+        fact.extracted_at
+    FROM fact_market_status fact
+    JOIN dim_assets dim ON fact.id = dim.id;
+    """
+    
+    df_dashboard = pd.read_sql_query(query_flat, conn)
+    csv_export_path = os.path.join(base_dir, "data", "dashboard_clean_snapshot.csv")
+    df_dashboard.to_csv(csv_export_path, index=False)
+    print(f"Flattened CSV generated successfully at: {csv_export_path}")
+    
+    conn.close()
 
 if __name__ == "__main__":
     run_etl()
