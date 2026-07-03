@@ -21,6 +21,10 @@ Hi! I'm a Data Professional focused on building automated data pipelines, machin
   * **Description:** Exploratory Data Analysis (EDA) uncovering key workforce insights, retention trends, and employee distributions into an interactive business intelligence layout.
   * **Tech Stack:** Power BI, Power Query, Python, Pandas (Data Ingestion)
 
+* **📊 [Zomato Bangalore Market Analysis](01-EDA/zomato/)**
+  * **Description:** End-to-end analysis of 51,000 restaurants. Built a Python pipeline optimizing memory by 98% and handling null values, paired with an interactive Power BI dashboard tracking regional market drivers.
+  * **Tech Stack:** Python, Pandas, NumPy, Seaborn, Matplotlib, Power BI Desktop, DAX, Git Cloud Hosting
+
 ---
 
 > 🚀 **Note:** More engineering pipelines and automated dashboards will be updated here soon as new builds are completed!
