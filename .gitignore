@@ -36,3 +36,4 @@ scratch/
 _old/
 temp_*.ipynb
 EOF
+01-EDA/zomato/data/zomato.csv
