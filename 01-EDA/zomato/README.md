@@ -1,5 +1,9 @@
 # Zomato Bangalore Market Analysis & BI Dashboard
 
+<p align="center">
+  <img src=".assets/logo.jpg" width="100%" alt="Zomato Logo">
+</p>
+
 ## Project Overview
 This project delivers an end-to-end data analytics solution processing over 51,000 restaurant records across the Bangalore region. By transitioning from exploratory data analysis (EDA) in Python to an interactive Business Intelligence layer in Power BI, this repository uncovers the key operational and financial drivers behind restaurant success, consumer engagement, and pricing strategies in India's tech capital.
 
