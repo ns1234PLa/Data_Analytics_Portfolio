@@ -9,20 +9,24 @@ Hi! I'm a Data Professional focused on building automated data pipelines, machin
 ### 🚀 Production Ready (Live Analytics & Dashboards)
 * **🎯 [Enterprise Customer Intelligence Engine](03-prescriptive_analytics/rfm_customer_segmentation/)**
   * **Description:** End-to-end prescriptive analytics pipeline utilizing K-Means clustering to segment 5,891 unique holiday shoppers based on frequency, monetary value, and category diversity. Features a dynamic Streamlit data-slicing engine.
+  * **Data Source:** [Kaggle Black Friday Sales Dataset](https://www.kaggle.com/datasets/syedhaideralizaidi/black-friday-dataset) (Consumer transactional purchase logs).
   * **Tech Stack:** Python, Scikit-Learn, Streamlit, Plotly, Pandas, Git Cloud Hosting
   * **Live Application:** [👉 Interact with the Live Engine](https://dataanalyticsportfolio-6j2wrbykyotmshnqpd8ic4.streamlit.app/)
 
 * **⚡ [Automated Crypto Data Warehouse Pipeline](02-descriptive_analytics/crypto_tracking_pipeline/)**
   * **Description:** Automated end-to-end ETL pipeline extracting live crypto market metrics from a REST API, structuring them into a relational SQLite data warehouse, and streaming real-time analytical snapshots to an interactive cloud dashboard.
+  * **Data Source:** Live data streaming via the public [CoinGecko REST API v3](https://docs.coingecko.com/docs/keyless-public-api) endpoint.
   * **Tech Stack:** Python, SQLite, GitHub Actions (CI/CD Cron), Google Sheets Cloud Layer, Looker Studio
   * **Live Dashboard:** [👉 View Live Interactive Report](https://datastudio.google.com/reporting/2d193c5e-fdde-4091-b0c5-63badaebd7b2)
 
 * **📊 [HR Analytics Dashboard](01-EDA/hr_analytics/)**
   * **Description:** Exploratory Data Analysis (EDA) uncovering key workforce insights, retention trends, and employee distributions into an interactive business intelligence layout.
+  * **Data Source:** [Kaggle HR Analytics Dataset](https://www.kaggle.com/datasets/saadharoon27/hr-analytics-dataset) (Corporate workforce and retention metrics).
   * **Tech Stack:** Power BI, Power Query, Python, Pandas (Data Ingestion)
 
 * **📊 [Zomato Bangalore Market Analysis](01-EDA/zomato/)**
   * **Description:** End-to-end analysis of 51,000 restaurants. Built a Python pipeline optimizing memory by 98% and handling null values, paired with an interactive Power BI dashboard tracking regional market drivers.
+  * **Data Source:** [Kaggle Zomato Bangalore Restaurants Dataset](https://www.kaggle.com/datasets/himanshupoddar/zomato-bangalore-restaurants) (51,000+ scraped establishment records).
   * **Tech Stack:** Python, Pandas, NumPy, Seaborn, Matplotlib, Power BI Desktop, DAX, Git Cloud Hosting
 
 ---
