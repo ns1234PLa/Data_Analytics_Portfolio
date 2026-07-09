@@ -25,6 +25,9 @@ jobs:
         pip install -r 02-descriptive_analytics/crypto_tracking_pipeline/requirements.txt
 
     - name: Execute ETL Pipeline Script
+      env:
+        # This securely binds your hidden deployment link to the runner environment at runtime
+        TABLEAU_WEBHOOK_URL: ${{ secrets.TABLEAU_WEBHOOK_URL }}
       run: |
         python 02-descriptive_analytics/crypto_tracking_pipeline/src/pipeline.py
 

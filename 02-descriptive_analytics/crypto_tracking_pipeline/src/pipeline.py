@@ -126,6 +126,30 @@ def run_etl():
     csv_export_path = os.path.join(base_dir, "data", "dashboard_clean_snapshot.csv")
     df_dashboard.to_csv(csv_export_path, index=False)
     print(f"Local files synchronized successfully.")
+
+    # =========================================================================
+    # PRODUCTION SECURITY LAYER: DYNAMIC CLOUD SYNCHRONIZATION VIA WEBHOOK
+    # =========================================================================
+    print("Initiating streaming synchronization to Tableau Cloud Bridge...")
+    
+    # Securely retrieve target URL from environment variables to prevent credentials exposure in source control
+    web_app_url = os.environ.get("TABLEAU_WEBHOOK_URL")
+    
+    if not web_app_url:
+        print("CRITICAL: TABLEAU_WEBHOOK_URL variable is absent. Aborting cloud matrix sync layer.")
+    else:
+        # Structure payload dynamically as a structured text matrix
+        payload = [df_dashboard.columns.tolist()] + df_dashboard.fillna("").values.tolist()
+        
+        try:
+            response = requests.post(web_app_url, json=payload, timeout=30)
+            if response.status_code == 200:
+                print("Tableau Cloud Bridge data sync executed successfully.")
+            else:
+                print(f"Cloud Bridge sync rejected payload with status code: {response.status_code}")
+        except Exception as e:
+            print(f"Failed to stream transmission payload to Cloud Bridge endpoint: {e}")
+
     conn.close()
 
 if __name__ == "__main__":
