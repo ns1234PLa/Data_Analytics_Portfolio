@@ -3,7 +3,7 @@
 An end-to-end automated ETL pipeline that extracts live market tracking metrics, structures them inside a relational localized data warehouse, and streams flattened snapshots securely to a live cloud reporting dashboard.
 
 ## 🔗 Live Project Links
-* **Interactive Analytics Dashboard:** [View Live Tableau Report](https://public.tableau.com/app/profile/samruddhi.naykodi/viz/DynamicCryptoAnalyticsWarehouse/Sheet1#1)
+* **Interactive Analytics Dashboard:** [View Live Tableau Report](https://public.tableau.com/app/profile/samruddhi.naykodi/viz/DynamicCryptoAnalyticsWarehouse/Dashboard1#1)
 
 ---
 

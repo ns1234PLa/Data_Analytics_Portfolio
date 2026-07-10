@@ -26,7 +26,7 @@ Hi! I'm a Data Analyst focused on translating raw data into actionable business 
     * **The Problem & Solution:** Built a lightweight, hands-off infrastructure to monitor volatile assets. This end-to-end pipeline extracts live market metrics from a REST API, structures them into a relational SQLite warehouse via scheduled automation, and pipes snapshots to a cloud-hosted reporting layer.
     * **Data Source:** Live data streaming via the public [CoinGecko REST API v3](https://docs.coingecko.com/docs/keyless-public-api) endpoint.
     * **Tech Stack:** Python, SQLite, GitHub Actions (CI/CD Cron), Google Sheets Cloud Layer, Tableau
-    * **Live Report:** [View Live Interactive Report](https://public.tableau.com/app/profile/samruddhi.naykodi/viz/DynamicCryptoAnalyticsWarehouse/Sheet1#1)
+    * **Live Report:** [View Live Interactive Report](https://public.tableau.com/app/profile/samruddhi.naykodi/viz/DynamicCryptoAnalyticsWarehouse/Dashboard1#1)
 
 ---
 
