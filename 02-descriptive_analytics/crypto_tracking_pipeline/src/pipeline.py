@@ -16,15 +16,11 @@ def get_missing_date_range(conn):
         print("Database empty. Initializing 90-day backfill...")
         start_date = datetime.now() - timedelta(days=90)
     else:
-        # last_date represents the latest day we have data for
         last_date = datetime.strptime(str(result), "%Y%m%d")
-        # To ensure we catch updates throughout the day or get the next day's interval,
-        # we start collecting right from that last date forward.
         start_date = last_date
         
     end_date = datetime.now()
     
-    # Simple check to make sure our start date makes logical sense
     if start_date.date() > end_date.date():
         return None, None
         
@@ -99,7 +95,6 @@ def run_etl():
                 dt = datetime.fromtimestamp(ts / 1000.0)
                 date_key = dt.strftime("%Y%m%d")
                 
-                # Using INSERT OR REPLACE allows us to overwrite data rows safely with fresh values
                 daily_groups[date_key] = {
                     "id": coin,
                     "date_id": int(date_key),
@@ -109,7 +104,7 @@ def run_etl():
                     "extracted_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                 }
             all_records.extend(daily_groups.values())
-            time.sleep(2) # Avoid public API rate limits
+            time.sleep(2)
         except Exception as e:
             print(f"Failed to fetch data for {coin}: {e}")
             continue
@@ -122,7 +117,6 @@ def run_etl():
             """, (rec["id"], rec["date_id"], rec["current_price"], rec["market_cap"], rec["total_volume"], rec["extracted_at"]))
         conn.commit()
 
-    # Generate flattened data structure for visualization tools
     query_flat = """
     SELECT fact.date_id, dim.name AS asset_name, dim.symbol AS ticker, fact.current_price, fact.market_cap, fact.total_volume
     FROM fact_market_status fact
@@ -137,24 +131,30 @@ def run_etl():
     # PRODUCTION SECURITY LAYER: DYNAMIC CLOUD SYNCHRONIZATION VIA WEBHOOK
     # =========================================================================
     print("Initiating streaming synchronization to Tableau Cloud Bridge...")
-    
-    # Securely retrieve target URL from environment variables to prevent credentials exposure in source control
     web_app_url = os.environ.get("TABLEAU_WEBHOOK_URL")
     
     if not web_app_url:
         print("CRITICAL: TABLEAU_WEBHOOK_URL variable is absent. Aborting cloud matrix sync layer.")
     else:
-        # Structure payload dynamically as a structured text matrix
         payload = [df_dashboard.columns.tolist()] + df_dashboard.fillna("").values.tolist()
         
-        try:
-            response = requests.post(web_app_url, json=payload, timeout=30)
-            if response.status_code == 200:
-                print("Tableau Cloud Bridge data sync executed successfully.")
-            else:
-                print(f"Cloud Bridge sync rejected payload with status code: {response.status_code}")
-        except Exception as e:
-            print(f"Failed to stream transmission payload to Cloud Bridge endpoint: {e}")
+        # Try up to 3 times to send the data before skipping to protect execution flow
+        for attempt in range(3):
+            try:
+                print(f"Sync attempt {attempt + 1}/3...")
+                response = requests.post(web_app_url, json=payload, timeout=45)
+                if response.status_code == 200:
+                    print("Tableau Cloud Bridge data sync executed successfully.")
+                    break
+                else:
+                    print(f"Cloud Bridge sync rejected payload with status code: {response.status_code}")
+            except requests.exceptions.Timeout:
+                print("Warning: Connection timed out. Google Apps Script is taking too long to respond.")
+                if attempt == 2:
+                    print("Bypassing sync timeout block to safeguard local storage updates.")
+            except Exception as e:
+                print(f"Network error encountered: {e}")
+                break
 
     conn.close()
 
