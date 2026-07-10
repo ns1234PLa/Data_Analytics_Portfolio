@@ -16,10 +16,15 @@ def get_missing_date_range(conn):
         print("Database empty. Initializing 90-day backfill...")
         start_date = datetime.now() - timedelta(days=90)
     else:
+        # last_date represents the latest day we have data for
         last_date = datetime.strptime(str(result), "%Y%m%d")
-        start_date = last_date + timedelta(days=1)
+        # To ensure we catch updates throughout the day or get the next day's interval,
+        # we start collecting right from that last date forward.
+        start_date = last_date
         
     end_date = datetime.now()
+    
+    # Simple check to make sure our start date makes logical sense
     if start_date.date() > end_date.date():
         return None, None
         
@@ -69,7 +74,7 @@ def run_etl():
 
     start_unix, end_unix = get_missing_date_range(conn)
     if start_unix is None:
-        print("Database is already up to date.")
+        print("Database is already up to date according to date validation logic.")
         conn.close()
         return
 
@@ -94,6 +99,7 @@ def run_etl():
                 dt = datetime.fromtimestamp(ts / 1000.0)
                 date_key = dt.strftime("%Y%m%d")
                 
+                # Using INSERT OR REPLACE allows us to overwrite data rows safely with fresh values
                 daily_groups[date_key] = {
                     "id": coin,
                     "date_id": int(date_key),
