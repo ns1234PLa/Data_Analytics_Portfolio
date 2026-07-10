@@ -32,3 +32,4 @@ While traditional dashboards require manual data preparation and flat-file uploa
 3. **Warehouse Sink:** The pipeline processes changes, commits fresh rows into the localized SQLite analytical data warehouse, and generates a flattened analytical dataset.
 4. **Secure Webhook Stream:** Python securely streams the updated matrix via a specialized `POST` network request to an obfuscated Google Apps Script microservice gateway. 
 5. **Visual Canvas Presentation:** The gateway writes the data directly into your cloud repository (`crypto_warehouse_live`), allowing Tableau Public to detect the state transition and dynamically update your public visual layouts automatically.
+6. **Cloud Trigger:** A GitHub Actions workflow automatically initializes on a daily cron schedule at midnight IST (capturing the finalized daily closing data for the elapsed date).
