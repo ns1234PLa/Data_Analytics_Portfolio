@@ -67,6 +67,7 @@ def run_etl():
     ]
     cursor.executemany("INSERT OR IGNORE INTO dim_assets VALUES (?, ?, ?)", static_assets)
     conn.commit()
+    print("Database tables created/verified")
 
     start_unix, end_unix = get_missing_date_range(conn)
     if start_unix is None:
@@ -89,6 +90,8 @@ def run_etl():
             market_caps = data.get("market_caps", [])
             total_volumes = data.get("total_volumes", [])
             
+            print(f"Got {len(prices)} price records for {coin}")
+            
             daily_groups = {}
             for i in range(len(prices)):
                 ts = prices[i][0]
@@ -109,6 +112,8 @@ def run_etl():
             print(f"Failed to fetch data for {coin}: {e}")
             continue
 
+    print(f"Total records collected: {len(all_records)}")
+    
     if all_records:
         for rec in all_records:
             cursor.execute("""
@@ -116,47 +121,71 @@ def run_etl():
                 VALUES (?, ?, ?, ?, ?, ?)
             """, (rec["id"], rec["date_id"], rec["current_price"], rec["market_cap"], rec["total_volume"], rec["extracted_at"]))
         conn.commit()
+        print(f"{len(all_records)} records inserted into SQLite")
+    else:
+        print("No records collected from CoinGecko")
 
+    # Query from database
     query_flat = """
     SELECT fact.date_id, dim.name AS asset_name, dim.symbol AS ticker, fact.current_price, fact.market_cap, fact.total_volume
     FROM fact_market_status fact
     JOIN dim_assets dim ON fact.id = dim.id;
     """
     df_dashboard = pd.read_sql_query(query_flat, conn)
+    print(f"Query returned {len(df_dashboard)} rows from database")
+    
+    if len(df_dashboard) > 0:
+        print(f"Sample row: {df_dashboard.iloc[0].to_dict()}")
+    else:
+        print("CRITICAL: Query returned 0 rows! Debugging...")
+        cursor.execute("SELECT COUNT(*) FROM fact_market_status")
+        total_count = cursor.fetchone()[0]
+        print(f"fact_market_status table has {total_count} rows total")
+        cursor.execute("SELECT COUNT(*) FROM dim_assets")
+        asset_count = cursor.fetchone()[0]
+        print(f"dim_assets table has {asset_count} rows")
+    
     csv_export_path = os.path.join(base_dir, "data", "dashboard_clean_snapshot.csv")
     df_dashboard.to_csv(csv_export_path, index=False)
-    print(f"Local files synchronized successfully.")
+    print(f"CSV exported: {csv_export_path}")
 
-    # =========================================================================
-    # PRODUCTION SECURITY LAYER: DYNAMIC CLOUD SYNCHRONIZATION VIA WEBHOOK
-    # =========================================================================
-    print("Initiating streaming synchronization to Tableau Cloud Bridge...")
+    # SYNC TO GOOGLE SHEETS VIA WEBHOOK
+    print("Initiating sync to Google Sheets...")
     web_app_url = os.environ.get("TABLEAU_WEBHOOK_URL")
     
     if not web_app_url:
-        print("CRITICAL: TABLEAU_WEBHOOK_URL variable is absent. Aborting cloud matrix sync layer.")
+        print("CRITICAL: TABLEAU_WEBHOOK_URL not set in GitHub Secrets")
     else:
-        payload = [df_dashboard.columns.tolist()] + df_dashboard.fillna("").values.tolist()
+        df_sync = df_dashboard.copy()
+        print(f"Preparing to send {len(df_sync)} rows to Google Sheets")
         
-        # Try up to 3 times to send the data before skipping to protect execution flow
-        for attempt in range(3):
-            try:
-                print(f"Sync attempt {attempt + 1}/3...")
-                response = requests.post(web_app_url, json=payload, timeout=45)
-                if response.status_code == 200:
-                    print("Tableau Cloud Bridge data sync executed successfully.")
+        if not df_sync.empty:
+            df_sync = df_sync[["date_id", "asset_name", "ticker", "current_price", "market_cap", "total_volume"]]
+            payload = [df_sync.columns.tolist()] + df_sync.fillna("").values.tolist()
+            print(f"Payload structure: {len(payload)} rows (header + data)")
+            
+            for attempt in range(3):
+                try:
+                    print(f"Attempt {attempt + 1}/3...")
+                    response = requests.post(web_app_url, json=payload, timeout=120)
+                    if response.status_code == 200:
+                        print("Data synced successfully to Google Sheets!")
+                        break
+                    else:
+                        print(f"Google Sheets rejected payload: {response.status_code}")
+                        print(f"Response: {response.text}")
+                except requests.exceptions.Timeout:
+                    print("Timeout (Google Apps Script may still be processing)")
+                    if attempt == 2:
+                        break
+                except Exception as e:
+                    print(f"Network error: {e}")
                     break
-                else:
-                    print(f"Cloud Bridge sync rejected payload with status code: {response.status_code}")
-            except requests.exceptions.Timeout:
-                print("Warning: Connection timed out. Google Apps Script is taking too long to respond.")
-                if attempt == 2:
-                    print("Bypassing sync timeout block to safeguard local storage updates.")
-            except Exception as e:
-                print(f"Network error encountered: {e}")
-                break
+        else:
+            print("DataFrame is empty - nothing to send!")
 
     conn.close()
+    print(f"ETL Run completed: {datetime.now()}")
 
 if __name__ == "__main__":
     run_etl()
