@@ -1,5 +1,4 @@
-cat > .gitignore << 'EOF'
-# Python
+# Python & Virtual Environments
 __pycache__/
 *.py[cod]
 *$py.class
@@ -8,32 +7,26 @@ __pycache__/
 venv/
 env/
 
-# Jupyter
-.ipynb_checkpoints/
-*.ipynb_checkpoints
-
-# IDE
+# IDE & OS Junk
 .vscode/
 .idea/
 *.swp
-
-# OS
 .DS_Store
 Thumbs.db
 
-# Credentials
+# Credentials & Configs
 .env
 config.json
 secrets.yaml
 
-# Large files
+# Data Pipelines & Heavy Warehouses (No Conflicts!)
+*.db
+*.hyper
+.*.twbr
+~*
+
+# Large Datasets (Portfolio Limits)
+*.csv
 *.xlsx
 *.xls
 *.zip
-
-# Temp
-scratch/
-_old/
-temp_*.ipynb
-EOF
-01-EDA/zomato/data/zomato.csv
