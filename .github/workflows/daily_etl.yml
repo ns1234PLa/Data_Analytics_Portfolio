@@ -35,6 +35,6 @@ jobs:
       run: |
         git config --global user.name "GitHub Actions Bot"
         git config --global user.email "actions@github.com"
-        git add 02-descriptive_analytics/crypto_tracking_pipeline/data/*
+        git add 02-descriptive_analytics/crypto_tracking_pipeline/data/*.csv
         git commit -m "chrono: automated daily warehouse update [skip ci]" || echo "No data changes detected"
         git push
