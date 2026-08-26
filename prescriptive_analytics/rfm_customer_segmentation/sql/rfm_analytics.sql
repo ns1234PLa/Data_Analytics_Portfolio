@@ -1,11 +1,10 @@
--- ====================================================================
+
 -- Enterprise Customer Intelligence: RFM Metric Aggregation & Ranking
 -- Target: Black Friday Transactional Data
--- Engine: DuckDB / ANSI SQL Compatible
--- ====================================================================
 
+    -- 1: Ingest and clean transaction data, handling null product categories
 WITH raw_transactions AS (
-    -- Step 1: Ingest and clean transaction data, handling null product categories
+
     SELECT 
         User_ID AS customer_id,
         Product_ID AS product_id,
@@ -24,8 +23,9 @@ WITH raw_transactions AS (
       AND Purchase > 0
 ),
 
+        -- 2: Compute Frequency (total items) and Monetary (total spend) per customer
 customer_aggregations AS (
-    -- Step 2: Compute Frequency (total items) and Monetary (total spend) per customer
+
     SELECT 
         customer_id,
         gender,
@@ -46,8 +46,9 @@ customer_aggregations AS (
         residency_duration
 ),
 
+        -- 3: Apply Window Functions to calculate percentiles and spend tiers
 customer_rankings AS (
-    -- Step 3: Apply Window Functions to calculate percentiles and spend tiers
+
     SELECT 
         *,
         DENSE_RANK() OVER (ORDER BY total_monetary_spend DESC) AS revenue_rank,
@@ -56,7 +57,7 @@ customer_rankings AS (
     FROM customer_aggregations
 )
 
--- Step 4: Final output with business segment classifications
+-- 4: Final output with business segment classifications
 SELECT 
     customer_id,
     gender,
