@@ -1,5 +1,5 @@
 #  Enterprise Customer Intelligence Engine
-> **Live Production URL:** [Click here to view the Application](https://dataanalyticsportfolio-6j2wrbykyotmshnqpd8ic4.streamlit.app/)
+> **Live Production URL:** [Click here to view the Application](https://dataanalyticsportfolio-5vhptnph4lfdcappztmwuzx.streamlit.app/)
 
 An end-to-end data pipeline and prescriptive analytics application that segments and clusters **5,891 unique customer profiles** using SQL data modeling and unsupervised machine learning. This engine moves past basic static reporting to provide interactive data slicing, lifecycle quantile tracking, and strategic marketing actions.
 

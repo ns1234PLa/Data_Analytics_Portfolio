@@ -26,4 +26,4 @@ Hi! I'm a Data Analyst focused on translating raw data into actionable business 
     * **The Problem & Solution:** Segmented 5,891 high-volume holiday shoppers to target marketing spend. Designed an end-to-end data pipeline using K-Means clustering based on RFM metrics (Recency, Frequency, Monetary value) and purchase diversity, complete with a dynamic Streamlit data-slicing interface.
     * **Data Source:** [Kaggle Black Friday Sales Dataset](https://www.kaggle.com/datasets/syedhaideralizaidi/black-friday-dataset)
     * **Tech Stack:** Python, Scikit-Learn, Streamlit, Plotly, Pandas
-    * **Live Application:** [Interact with the Live Engine](https://dataanalyticsportfolio-6j2wrbykyotmshnqpd8ic4.streamlit.app/)
+    * **Live Application:** [Interact with the Live Engine](https://dataanalyticsportfolio-5vhptnph4lfdcappztmwuzx.streamlit.app/)
